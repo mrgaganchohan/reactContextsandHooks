@@ -1,26 +1,70 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component , useState } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+// first we will make a new context
+const MyContext = React.createContext();
+
+// Then create a provider Component
+ const MyProvider = (props) => {
+  var initial_data  = {
+    name: 'Wes',
+    age: 100,
+    cool: true
+  }
+
+  const [ data, setData] = useState(initial_data)
+  
+    return (
+      <MyContext.Provider value={{
+        state:data,
+        growAYearOlder: () => setData(data => ({ ...data, age: data.age + 1  }))
+       
+      }}>
+        {props.children}
+      </MyContext.Provider>
+    )
+  }
+
+
+const Family = (props) => (
+  <div className="family">
+           
+
+    <Person />
+  </div>
+)
+
+class Person extends Component {
+  render() {
+    return (
+      <div className="person">
+        <MyContext.Consumer>
+          { context => (
+            <React.Fragment>
+              <p>Age: {context.state.age}</p>
+              <p>Name: {context.state.name}</p>
+              <button onClick={context.growAYearOlder}>🍰🍥🎂</button>
+             </React.Fragment> 
+          )}
+        </MyContext.Consumer>
+      </div>
+    )
+  }
 }
 
+
+class App extends Component {
+  render() {
+    return (
+      <MyProvider>
+        <div>
+          <p>I am the app</p>
+          <Family />
+        </div>
+      </MyProvider>
+    );
+  }
+}
+
+
 export default App;
+
